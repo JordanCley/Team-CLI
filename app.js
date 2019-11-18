@@ -5,6 +5,11 @@ const Employee = require("./lib/Employee.js");
 const Engineer = require("./lib/Engineer.js");
 const Intern = require("./lib/Intern.js");
 const Manager = require("./lib/Manager.js");
+
+
+// const readFileAsync = util.promisify(fs.readFile);
+// const writeFileAsync = util.promisify(fs.writeFile);
+
 const questions = [
   {
     type: 'input',
@@ -59,22 +64,122 @@ const questions = [
   }
 ]
 
+function generateEngineer(answers) {
+  return `
+  <div class="card bg-dark mb-3" style="width: 18rem;">
+  <div class="card-body">
+    <h5 class="card-title text-white text-center">${answers.name}</h5>
+    <h6 class="card-subtitle mb-2 text-muted text-center">${answers.title}</h6>
+    <ul class="list-group list-group-flush">
+      <li class="list-group-item">ID: ${answers.id}</li>
+      <li class="list-group-item">
+        Email: <a href="#" class="card-link">${answers.email}</a>
+      </li>
+      <li class="list-group-item">
+        Github: <a href="https://github.com/${answers.github}" class="card-link">${answers.github}</a>
+      </li>
+    </ul>
+  </div>
+</div>
+
+`
+};
+
+function generateIntern(answers) {
+  return `
+  <div class="card bg-dark mb-3" style="width: 18rem;">
+  <div class="card-body">
+    <h5 class="card-title text-white text-center">${answers.name}</h5>
+    <h6 class="card-subtitle mb-2 text-muted text-center">${answers.title}</h6>
+    <ul class="list-group list-group-flush">
+      <li class="list-group-item">ID: ${answers.id}</li>
+      <li class="list-group-item">
+        Email: <a href="#" class="card-link">${answers.email}</a>
+      </li>
+      <li class="list-group-item">
+        School: ${answers.school} 
+      </li>
+    </ul>
+  </div>
+</div>
+
+`
+};
+
+function generateManager(answers){
+  return `
+  <div class="card bg-dark mb-3" style="width: 18rem;">
+  <div class="card-body">
+    <h5 class="card-title text-white text-center">${answers.name}</h5>
+    <h6 class="card-subtitle mb-2 text-muted text-center">${answers.title}</h6>
+    <ul class="list-group list-group-flush">
+      <li class="list-group-item">ID: ${answers.id}</li>
+      <li class="list-group-item">
+        Email: <a href="#" class="card-link">${answers.email}</a>
+      </li>
+      <li class="list-group-item">
+        Office Number: ${answers.officeNumber}
+      </li>
+    </ul>
+  </div>
+</div>
+
+`
+}
+
+function generateFinal(){
+}
+
+function deleteFiles(){
+  fs.unlink('./templates/engineer.html', (err) => {
+    if(err) throw err;
+    // console.log("engineer.html deleted");
+  })
+  fs.unlink('./templates/intern.html', (err) => {
+    if(err) throw err;
+    // console.log("intern.html deleted");
+  })
+  fs.unlink('./templates/manager.html', (err) => {
+    if(err) throw err;
+    // console.log("manager.html deleted");
+  })
+  return;
+}
+
 function promptUser() {
   return inquirer.prompt(questions).then(answers => {
     if(answers.title == 'Engineer'){
       let engineer = new Engineer(answers.name, answers.id, answers.email, answers.github);
       engineer.getRole();
-      console.log(engineer);
+      let html = generateEngineer(answers);
+      fs.appendFile('./templates/engineer.html', html, (err) => {
+        if(err) throw err;
+        console.log("file has been saved");
+      })
+      // teamMembers.push(engineer);
+      // console.log(teamMembers);
 
     } if(answers.title == 'Intern'){
       let intern = new Intern(answers.name, answers.id, answers.email, answers.school);
       intern.getRole();
-      console.log(intern);
+      let html = generateIntern(answers);
+      fs.appendFile('./templates/intern.html', html, (err) => {
+        if(err) throw err;
+        console.log("file has been saved");
+      })
+      // teamMembers.push(intern);
+      // console.log(teamMembers);
 
     } if(answers.title == 'Manager'){
       let manager = new Manager(answers.name, answers.id, answers.email, answers.officeNumber);
       manager.getRole();
-      console.log(manager);
+      let html = generateManager(answers);
+      fs.appendFile('./templates/manager.html', html, (err) => {
+        if(err) throw err;
+        console.log("file has been saved");
+      })
+      // teamMembers.push(manager);
+      // console.log(teamMembers);
     }
       console.log("Success!");
       return answers;
@@ -83,10 +188,13 @@ function promptUser() {
 
 async function init(){
   try{
+    // await deleteFiles();
     const answers = await promptUser();
     if(answers.addMember){
       init();
     }
+    // await generateFinal();
+    // console.log(teamMembers[0].name);
     
     // console.log(answers);
   } catch (error) {
@@ -94,7 +202,7 @@ async function init(){
   }
 }
 
-// promptUser();
+
 init();
 
 // const Engineer1 = new Engineer("Jordan", 26, "Jordan@hotmial.com", "JordanCley");
