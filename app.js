@@ -61,15 +61,34 @@ const questions = [
 
 function promptUser() {
   return inquirer.prompt(questions).then(answers => {
-        console.log("Success!");
-        return answers;
+    if(answers.title == 'Engineer'){
+      let engineer = new Engineer(answers.name, answers.id, answers.email, answers.github);
+      engineer.getRole();
+      console.log(engineer);
+
+    } if(answers.title == 'Intern'){
+      let intern = new Intern(answers.name, answers.id, answers.email, answers.school);
+      intern.getRole();
+      console.log(intern);
+
+    } if(answers.title == 'Manager'){
+      let manager = new Manager(answers.name, answers.id, answers.email, answers.officeNumber);
+      manager.getRole();
+      console.log(manager);
+    }
+      console.log("Success!");
+      return answers;
       });
 }
 
 async function init(){
   try{
     const answers = await promptUser();
-    console.log(answers);
+    if(answers.addMember){
+      init();
+    }
+    
+    // console.log(answers);
   } catch (error) {
     console.error(error);
   }
